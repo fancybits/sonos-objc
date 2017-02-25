@@ -557,6 +557,24 @@ __a < __b ? __a : __b; })
     }];
 }
 
+- (void)join:(SonosController *)master completion:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error)) block {
+    [self
+        upnp:@"/MediaRenderer/AVTransport/Control"
+        soap_service:@"urn:schemas-upnp-org:service:AVTransport:1"
+        soap_action:@"SetAVTransportURI"
+        soap_arguments:[NSString stringWithFormat:@"<InstanceID>0</InstanceID><CurrentURI>x-rincon:%@</CurrentURI><CurrentURIMetaData></CurrentURIMetaData>", master.uuid]
+        completion:block];
+}
+
+- (void)unjoin:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error)) block {
+    [self
+        upnp:@"/MediaRenderer/AVTransport/Control"
+        soap_service:@"urn:schemas-upnp-org:service:AVTransport:1"
+        soap_action:@"BecomeCoordinatorOfStandaloneGroup"
+        soap_arguments:@"<InstanceID>0</InstanceID>"
+        completion:block];
+}
+
 -(BOOL)isEqual:(SonosController *)other {
     return [self.ip isEqual:other.ip] && (self.port == other.port);
 }
