@@ -225,7 +225,7 @@
 
 - (void)browse:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error)) block;
 
-- (void)join:(SonosController *)master completion:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error)) block;
+- (void)join:(SonosController * _Nonnull)master completion:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error)) block;
 
 - (void)unjoin:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error)) block;
 
