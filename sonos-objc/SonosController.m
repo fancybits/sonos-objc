@@ -407,7 +407,7 @@ __a < __b ? __a : __b; })
         completion:block];
 }
 
-- (void)trackInfo:(void (^)(NSString *artist, NSString *title, NSString *album, NSURL *albumArt, NSInteger time, NSInteger duration, NSInteger queueIndex, NSString *trackURI, NSString *protocol, NSError *error))block {
+- (void)trackInfo:(void (^)(NSString *artist, NSString *title, NSString *album, NSURL *albumArt, NSNumber *time, NSNumber *duration, NSInteger queueIndex, NSString *trackURI, NSString *protocol, NSError *error))block {
     [self
         upnp:@"/MediaRenderer/AVTransport/Control"
         soap_service:@"urn:schemas-upnp-org:service:AVTransport:1"
@@ -432,20 +432,26 @@ __a < __b ? __a : __b; })
             NSURL *albumArt = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:%d%@", self.ip, self.port, trackMetaData[@"DIDL-Lite"][@"item"][@"upnp:albumArtURI"][@"text"]]];
          
             // Convert current progress time to seconds
+            NSNumber *time = nil;
             NSString *timeString = positionInfoResponse[@"RelTime"][@"text"];
-            NSArray *times = [timeString componentsSeparatedByString:@":"];
-            int hours = [[times objectAtIndex:0] intValue] * 3600;
-            int minutes = [[times objectAtIndex:1] intValue] * 60;
-            int seconds = [[times objectAtIndex:2] intValue];
-            NSInteger time = hours + minutes + seconds;
+            if (![timeString isEqualToString:@"NOT_IMPLEMENTED"]) {
+                NSArray *times = [timeString componentsSeparatedByString:@":"];
+                int hours = [[times objectAtIndex:0] intValue] * 3600;
+                int minutes = [[times objectAtIndex:1] intValue] * 60;
+                int seconds = [[times objectAtIndex:2] intValue];
+                time = [NSNumber numberWithInt:(hours + minutes + seconds)];
+            }
          
             // Convert track duration time to seconds
+            NSNumber *duration = nil;
             NSString *durationString = positionInfoResponse[@"TrackDuration"][@"text"];
-            NSArray *durations = [durationString componentsSeparatedByString:@":"];
-            int durationHours = [[durations objectAtIndex:0] intValue] * 3600;
-            int durationMinutes = [[durations objectAtIndex:1] intValue] * 60;
-            int durationSeconds = [[durations objectAtIndex:2] intValue];
-            NSInteger duration = durationHours + durationMinutes + durationSeconds;
+            if (![durationString isEqualToString:@"NOT_IMPLEMENTED"]) {
+                NSArray *durations = [durationString componentsSeparatedByString:@":"];
+                int durationHours = [[durations objectAtIndex:0] intValue] * 3600;
+                int durationMinutes = [[durations objectAtIndex:1] intValue] * 60;
+                int durationSeconds = [[durations objectAtIndex:2] intValue];
+                duration = [NSNumber numberWithInt:(durationHours + durationMinutes + durationSeconds)];
+            }
          
             NSInteger queueIndex = [positionInfoResponse[@"Track"][@"text"] integerValue];
          
