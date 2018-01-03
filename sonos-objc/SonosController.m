@@ -204,6 +204,17 @@ __a < __b ? __a : __b; })
      }];
 }
 
+- (void)playQueue:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error))block {
+  [self
+   upnp:@"/MediaRenderer/AVTransport/Control"
+   soap_service:@"urn:schemas-upnp-org:service:AVTransport:1"
+   soap_action:@"SetAVTransportURI"
+   soap_arguments:[NSString stringWithFormat:@"<InstanceID>0</InstanceID><CurrentURI>%@</CurrentURI><CurrentURIMetaData></CurrentURIMetaData>", [NSString stringWithFormat:@"x-rincon-queue:%@#0", self.uuid]]
+   completion:^(id responseObject, NSError *error) {
+     [self play:nil completion:block];
+   }];
+}
+
 - (void)playPlayable:(SonosPlayable * _Nonnull)playable completion:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error))block {
   [self play:playable.resTextEscaped URIMetaData:playable.resMDEscaped completion:^(NSDictionary * _Nullable response, NSError * _Nullable error) {
     if (error) {

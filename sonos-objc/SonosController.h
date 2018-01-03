@@ -99,6 +99,13 @@
 - (void)playQueuePosition:(int)position completion:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error))block;
 
 /**
+ Play the queue
+ 
+ @param block Objective-C block to call on finish
+ */
+- (void)playQueue:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error))block;
+
+/**
  Pause playback
  
  @param block Objective-C block to call on finish
