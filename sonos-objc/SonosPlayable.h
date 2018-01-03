@@ -36,7 +36,7 @@
 @property (nonatomic, strong) NSString *resProtocolInfo;
 @property (nonatomic, strong) NSString *resText;
 @property (nonatomic, strong) NSString *sonosType;
-@property (nonatomic, strong) NSString *albumArtUri;
+@property (nonatomic, strong) NSURL *albumArtUri;
 
 - (NSString *)resTextEscaped;
 - (NSString *)resMDEscaped;

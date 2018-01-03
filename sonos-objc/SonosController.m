@@ -117,9 +117,9 @@ __a < __b ? __a : __b; })
        
        if ([item[@"upnp:albumArtURI"] isKindOfClass:NSArray.class]) {
          NSDictionary *albumArtDict = [item[@"upnp:albumArtURI"] firstObject];
-         playable.albumArtUri = albumArtDict[@"text"];
+         playable.albumArtUri = [NSURL URLWithString:albumArtDict[@"text"]];
        } else {
-         playable.albumArtUri = item[@"upnp:albumArtURI"][@"text"];
+         playable.albumArtUri = [NSURL URLWithString:item[@"upnp:albumArtURI"][@"text"]];
        }
        
        [responseItems addObject:playable];
