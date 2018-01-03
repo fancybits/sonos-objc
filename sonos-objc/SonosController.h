@@ -83,6 +83,14 @@
 - (void)playSpotifyTrack:(NSString * _Nonnull)track completion:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error))block;
 
 /**
+ Play a SonosPlayable
+ 
+ @param playable SonosPlayable like a favorite
+ @param block Objective-C block to call on finish
+ */
+- (void)playPlayable:(SonosPlayable * _Nonnull)playable completion:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error))block;
+
+/**
  Play track in queue
  
  @param position. Starts counting at 1

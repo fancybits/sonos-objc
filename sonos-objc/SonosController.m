@@ -204,6 +204,27 @@ __a < __b ? __a : __b; })
      }];
 }
 
+- (void)playPlayable:(SonosPlayable * _Nonnull)playable completion:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error))block {
+  [self play:playable.resTextEscaped URIMetaData:playable.resMDEscaped completion:^(NSDictionary * _Nullable response, NSError * _Nullable error) {
+    if (error) {
+      [self queue:playable.resTextEscaped URIMetaData:playable.resMDEscaped replace:YES completion:^(NSDictionary * _Nullable response, NSError * _Nullable queueError) {
+        if (queueError) {
+          if(block) {
+            block(response, error);
+          }
+          return;
+        }else{
+          [self playQueue:block];
+        }
+      }];
+    }else{
+      if(block) {
+        block(response, error);
+      }
+    }
+  }];
+}
+
 - (void)pause:(void (^)(NSDictionary *reponse, NSError *error))block {
     [self
         upnp:@"/MediaRenderer/AVTransport/Control"
