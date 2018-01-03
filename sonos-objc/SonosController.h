@@ -27,6 +27,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SonosPlayable.h"
 
 @interface SonosController : NSObject
 
@@ -240,5 +241,14 @@
  @param block Objective-C block to call on finish
  */
 - (void)unjoin:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error)) block;
+
+/**
+ Get favorites
+ Returns array of SonosPlayable items in block
+ 
+ @param block Objective-C block to call on finish
+ */
+- (void)getFavorites:(void (^ _Nullable)(NSArray <SonosPlayable*> * _Nullable response, NSError * _Nullable error))block;
+
 
 @end

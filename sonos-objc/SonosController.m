@@ -88,6 +88,47 @@ __a < __b ? __a : __b; })
     [dataTask resume];
 }
 
+- (void)getFavorites:(void (^ _Nullable)(NSArray <SonosPlayable*> * _Nullable response, NSError * _Nullable error))block {
+  [self
+   upnp:@"/MediaServer/ContentDirectory/Control"
+   soap_service:@"urn:schemas-upnp-org:service:ContentDirectory:1"
+   soap_action:@"Browse"
+   soap_arguments:@"<ObjectID>FV:2</ObjectID><BrowseFlag>BrowseDirectChildren</BrowseFlag><Filter>dc:title,res,dc:creator,upnp:artist,upnp:album,upnp:albumArtURI</Filter><StartingIndex>0</StartingIndex><RequestedCount>100</RequestedCount><SortCriteria></SortCriteria>"
+   completion:^(NSDictionary *response, NSError *error) {
+     if(error) block(nil, error);
+     
+     NSDictionary *itemDictionary = [XMLReader dictionaryForXMLString:response[@"s:Envelope"][@"s:Body"][@"u:BrowseResponse"][@"Result"][@"text"]  error:nil];
+     
+     NSArray * items = itemDictionary[@"DIDL-Lite"][@"item"];
+     
+     NSMutableArray <SonosPlayable*>* responseItems = [[NSMutableArray <SonosPlayable*> alloc] init];
+     
+     for (NSDictionary * item in items) {
+       
+       SonosPlayable * playable = [[SonosPlayable alloc] init];
+       
+       playable.title = item[@"dc:title"][@"text"];
+       playable.descriptionText = item[@"r:description"][@"text"];
+       playable.ordinal = item[@"r:ordinal"][@"text"];
+       playable.resMD = item[@"r:resMD"][@"text"];
+       playable.sonosType = item[@"r:type"][@"text"];
+       playable.resProtocolInfo = item[@"res"][@"protocolInfo"];
+       playable.resText = item[@"res"][@"text"];
+       
+       if ([item[@"upnp:albumArtURI"] isKindOfClass:NSArray.class]) {
+         NSDictionary *albumArtDict = [item[@"upnp:albumArtURI"] firstObject];
+         playable.albumArtUri = albumArtDict[@"text"];
+       } else {
+         playable.albumArtUri = item[@"upnp:albumArtURI"][@"text"];
+       }
+       
+       [responseItems addObject:playable];
+     }
+     
+     block(responseItems, error);
+   }];
+}
+
 - (void)play:(NSString *)track completion:(void (^)(NSDictionary *response, NSError *error))block {
     if(track) {
         NSString *meta = @"<DIDL-Lite xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" xmlns:r=\"urn:schemas-rinconnetworks-com:metadata-1-0/\" xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\"><item id=\"10000000spotify%3atrack%3a3bT5PDBhVj4ifU11zQvGP2\" restricted=\"true\">\
