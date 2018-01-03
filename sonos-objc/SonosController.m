@@ -589,4 +589,9 @@ __a < __b ? __a : __b; })
     return [self.ip hash] ^ self.port;
 }
 
+- (NSString *)description{
+  return [NSString stringWithFormat:@"<SonosController: %p, udid: %@, name: %@, group: %@ >",
+          self, self.uuid, self.name, self.group];
+}
+
 @end
