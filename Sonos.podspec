@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "Sonos"
-  s.version      = "0.1.3"
+  s.version      = "0.1.3-updates"
   s.description      = <<-EOL
     The aim of this library is to create a simple to use, yet useful API to control Sonos Devices via SOAP. It depends on AFNetworking (iOS and OS X), CocoaAsyncSocket (iOS and OS X) and XMLReader.h/m (iOS and OS X)
   EOL
