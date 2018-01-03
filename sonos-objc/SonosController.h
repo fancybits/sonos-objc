@@ -225,8 +225,20 @@
 
 - (void)browse:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error)) block;
 
+/**
+ Joins a group
+ 
+ @param master SonosController to join as a group
+ @param block Objective-C block to call on finish
+ */
+
 - (void)join:(SonosController * _Nonnull)master completion:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error)) block;
 
+/**
+ Unjoins from a group
+ 
+ @param block Objective-C block to call on finish
+ */
 - (void)unjoin:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error)) block;
 
 @end
