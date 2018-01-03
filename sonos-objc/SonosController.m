@@ -50,12 +50,12 @@ __a < __b ? __a : __b; })
         _httpSessionManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
         _httpSessionManager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
     }
-    
+
     return self;
 }
 
 - (void)upnp:(NSString *)url soap_service:(NSString *)soap_service soap_action:(NSString *)soap_action soap_arguments:(NSString *)soap_arguments completion:(void (^)(NSDictionary *, NSError *))block {
-    
+
     // Create Body data
     NSMutableString *post_xml = [[NSMutableString alloc] init];
     [post_xml appendString:@"<s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/' s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'>"];
@@ -65,17 +65,17 @@ __a < __b ? __a : __b; })
     [post_xml appendFormat:@"</u:%@>", soap_action];
     [post_xml appendString:@"</s:Body>"];
     [post_xml appendString:@"</s:Envelope>"];
-    
+
     // Create HTTP Request
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://%@:%d%@", self.ip, self.port, url]]];
     [request setHTTPMethod:@"POST"];
     [request setTimeoutInterval:15.0];
-    
+
     // Set headers
     [request addValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
     [request addValue:[NSString stringWithFormat:@"%@#%@", soap_service, soap_action] forHTTPHeaderField:@"SOAPACTION"];
-    
+
     // Set Body
     [request setHTTPBody:[post_xml dataUsingEncoding:NSUTF8StringEncoding]];
 
@@ -137,7 +137,7 @@ __a < __b ? __a : __b; })
             <desc id=\"cdudn\" nameSpace=\"urn:schemas-rinconnetworks-com:metadata-1-0/\">SA_RINCON2311_X_#Svc2311-0-Token</desc>\
             </item>\
             </DIDL-Lite>";
-        
+
         [self
             upnp:@"/MediaRenderer/AVTransport/Control"
             soap_service:@"urn:schemas-upnp-org:service:AVTransport:1"
@@ -200,6 +200,7 @@ __a < __b ? __a : __b; })
                 }
                 return;
             }
+          
             [self play:nil completion:block];
      }];
 }
@@ -334,11 +335,11 @@ __a < __b ? __a : __b; })
 }
 
 - (void)queueSpotifyPlaylist:(NSString *)playlist replace:(BOOL)replace completion:(void (^)(NSDictionary *reponse, NSError *error))block {
-    
+
     NSArray *playlistURI = [playlist componentsSeparatedByString:@":"];
     NSString *playlistOwner = [playlistURI objectAtIndex:2];
     NSString *playlistID = [playlistURI objectAtIndex:4];
-    
+
     NSString *meta = [NSString stringWithFormat:
                       @"<DIDL-Lite xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" xmlns:r=\"urn:schemas-rinconnetworks-com:metadata-1-0/\" xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\"> \
                       <item id=\"10060a6cspotify%%3auser%%3a%@%%3aplaylist%%3a%@\" parentID=\"100a0664playlists\" restricted=\"true\"> \
@@ -346,9 +347,9 @@ __a < __b ? __a : __b; })
                       <desc id=\"cdudn\" nameSpace=\"urn:schemas-rinconnetworks-com:metadata-1-0/\">SA_RINCON2311_X_#Svc2311-0-Token</desc> \
                       </item> \
                       </DIDL-Lite>", playlistOwner, playlistID];
-    
+
     meta = [[[meta stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"] stringByReplacingOccurrencesOfString:@">" withString:@"&gt;"] stringByReplacingOccurrencesOfString:@"\"" withString:@"&quot;"];
-    
+
     if(replace) {
         [self clearQueue:^(NSDictionary *response, NSError *error){
             if(error) {
@@ -358,7 +359,7 @@ __a < __b ? __a : __b; })
                     return;
                 }
             }
-                
+
             [self
                 upnp:@"/MediaRenderer/AVTransport/Control"
                 soap_service:@"urn:schemas-upnp-org:service:AVTransport:1"
@@ -390,7 +391,7 @@ __a < __b ? __a : __b; })
         }
         return;
     }
-    
+
     [self
         upnp:@"/MediaRenderer/RenderingControl/Control"
         soap_service:@"urn:schemas-upnp-org:service:RenderingControl:1"
@@ -494,10 +495,10 @@ __a < __b ? __a : __b; })
                 block(nil, nil, nil, nil, 0, 0, 0, nil, nil, error);
                 return;
             }
-         
+
             NSDictionary *positionInfoResponse = response[@"s:Envelope"][@"s:Body"][@"u:GetPositionInfoResponse"];
             NSDictionary *trackMetaData = [XMLReader dictionaryForXMLString:positionInfoResponse[@"TrackMetaData"][@"text"] error:nil];
-         
+
             // Save track meta data
             NSString *artist = trackMetaData[@"DIDL-Lite"][@"item"][@"dc:creator"][@"text"];
             NSString *title = trackMetaData[@"DIDL-Lite"][@"item"][@"dc:title"][@"text"];
@@ -523,7 +524,7 @@ __a < __b ? __a : __b; })
                 int seconds = [[times objectAtIndex:2] intValue];
                 time = [NSNumber numberWithInt:(hours + minutes + seconds)];
             }
-         
+
             // Convert track duration time to seconds
             NSNumber *duration = nil;
             NSString *durationString = positionInfoResponse[@"TrackDuration"][@"text"];
@@ -534,12 +535,12 @@ __a < __b ? __a : __b; })
                 int durationSeconds = [[durations objectAtIndex:2] intValue];
                 duration = [NSNumber numberWithInt:(durationHours + durationMinutes + durationSeconds)];
             }
-         
+
             NSInteger queueIndex = [positionInfoResponse[@"Track"][@"text"] integerValue];
-         
+
             NSString *trackURI = positionInfoResponse[@"TrackURI"][@"text"];
             NSString *protocol = trackMetaData[@"DIDL-Lite"][@"item"][@"res"][@"protocolInfo"];
-         
+
             block(artist, title, album, albumArt, time, duration, queueIndex, trackURI, protocol, error);
      }];
 }
@@ -623,7 +624,7 @@ __a < __b ? __a : __b; })
                                            @"MetaDataTrackURI": queue_item[@"res"][@"text"]};
                     [queue_items addObject:item];
                 }
-                 
+
                 // HTTP Streaming (SoundCloud?)
                 if([queue_item[@"res"][@"protocolInfo"] isEqualToString:@"sonos.com-http:*:audio/mpeg:*"]) {
                     NSDictionary *item = @{@"MetaDataCreator" : queue_item[@"dc:creator"][@"text"],
