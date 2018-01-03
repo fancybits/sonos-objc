@@ -429,8 +429,17 @@ __a < __b ? __a : __b; })
             NSString *artist = trackMetaData[@"DIDL-Lite"][@"item"][@"dc:creator"][@"text"];
             NSString *title = trackMetaData[@"DIDL-Lite"][@"item"][@"dc:title"][@"text"];
             NSString *album = trackMetaData[@"DIDL-Lite"][@"item"][@"upnp:album"][@"text"];
-            NSURL *albumArt = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:%d%@", self.ip, self.port, trackMetaData[@"DIDL-Lite"][@"item"][@"upnp:albumArtURI"][@"text"]]];
-         
+          
+            // Album art from sources that play TO Sonos (Spotify, Tidal, Pandora, Alexa, etc) already
+            // have a fully qualified URLs
+            NSURL *albumArt;
+            NSString *albumArtString = trackMetaData[@"DIDL-Lite"][@"item"][@"upnp:albumArtURI"][@"text"];
+            if (albumArtString.isAbsolutePath){
+              albumArt = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:%d%@", self.ip, self.port, albumArtString]];
+            }else{
+              albumArt = [NSURL URLWithString:albumArtString];
+            }
+
             // Convert current progress time to seconds
             NSNumber *time = nil;
             NSString *timeString = positionInfoResponse[@"RelTime"][@"text"];
