@@ -115,13 +115,20 @@ __a < __b ? __a : __b; })
        playable.resProtocolInfo = item[@"res"][@"protocolInfo"];
        playable.resText = item[@"res"][@"text"];
        
+       NSString *albumArtString;
        if ([item[@"upnp:albumArtURI"] isKindOfClass:NSArray.class]) {
          NSDictionary *albumArtDict = [item[@"upnp:albumArtURI"] firstObject];
-         playable.albumArtUri = [NSURL URLWithString:albumArtDict[@"text"]];
+         albumArtString = albumArtDict[@"text"];
        } else {
-         playable.albumArtUri = [NSURL URLWithString:item[@"upnp:albumArtURI"][@"text"]];
+         albumArtString = item[@"upnp:albumArtURI"][@"text"];
        }
        
+       if (albumArtString.isAbsolutePath){
+         playable.albumArtUri = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:%d%@", self.ip, self.port, albumArtString]];
+       }else{
+         playable.albumArtUri = [NSURL URLWithString:albumArtString];
+       }
+
        [responseItems addObject:playable];
      }
      
