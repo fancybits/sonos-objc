@@ -218,7 +218,7 @@
  
  @param block Objective-C block to call on finish
  */
-- (void)trackInfo:(void (^ _Nullable)(NSString * _Nullable artist, NSString * _Nullable title, NSString * _Nullable album, NSURL * _Nullable albumArt, NSNumber * _Nullable time, NSNumber * _Nullable duration, NSInteger queueIndex, NSString * _Nullable trackURI, NSString * _Nullable protocol, NSError * _Nullable error))block;
+- (void)trackInfo:(void (^ _Nullable)(NSString * _Nullable artist, NSString * _Nullable title, NSString * _Nullable album, NSURL * _Nullable albumArt, NSNumber * _Nullable time, NSNumber * _Nullable duration, NSInteger queueIndex, NSString * _Nullable trackURI, NSString * _Nullable protocol, NSString * _Nullable streamContent, NSError * _Nullable error))block;
 
 - (void)mediaInfo:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error))block;
 

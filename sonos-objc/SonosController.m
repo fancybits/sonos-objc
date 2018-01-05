@@ -488,7 +488,7 @@ __a < __b ? __a : __b; })
         completion:block];
 }
 
-- (void)trackInfo:(void (^)(NSString *artist, NSString *title, NSString *album, NSURL *albumArt, NSNumber *time, NSNumber *duration, NSInteger queueIndex, NSString *trackURI, NSString *protocol, NSError *error))block {
+- (void)trackInfo:(void (^)(NSString *artist, NSString *title, NSString *album, NSURL *albumArt, NSNumber *time, NSNumber *duration, NSInteger queueIndex, NSString *trackURI, NSString *protocol, NSString *streamContent, NSError *error))block {
     [self
         upnp:@"/MediaRenderer/AVTransport/Control"
         soap_service:@"urn:schemas-upnp-org:service:AVTransport:1"
@@ -499,12 +499,15 @@ __a < __b ? __a : __b; })
                 return;
             }
             if(error) {
-                block(nil, nil, nil, nil, 0, 0, 0, nil, nil, error);
+                block(nil, nil, nil, nil, 0, 0, 0, nil, nil, nil, error);
                 return;
             }
 
             NSDictionary *positionInfoResponse = response[@"s:Envelope"][@"s:Body"][@"u:GetPositionInfoResponse"];
             NSDictionary *trackMetaData = [XMLReader dictionaryForXMLString:positionInfoResponse[@"TrackMetaData"][@"text"] error:nil];
+
+            // Save stream meta data
+            NSString *streamContent = trackMetaData[@"DIDL-Lite"][@"item"][@"r:streamContent"][@"text"];
 
             // Save track meta data
             NSString *artist = trackMetaData[@"DIDL-Lite"][@"item"][@"dc:creator"][@"text"];
@@ -548,7 +551,7 @@ __a < __b ? __a : __b; })
             NSString *trackURI = positionInfoResponse[@"TrackURI"][@"text"];
             NSString *protocol = trackMetaData[@"DIDL-Lite"][@"item"][@"res"][@"protocolInfo"];
 
-            block(artist, title, album, albumArt, time, duration, queueIndex, trackURI, protocol, error);
+            block(artist, title, album, albumArt, time, duration, queueIndex, trackURI, protocol, streamContent, error);
      }];
 }
 
