@@ -564,6 +564,26 @@ __a < __b ? __a : __b; })
         completion:block];
 }
 
+- (void)playbackMode:(void (^)(NSDictionary *reponse, NSError *error))block {
+  [self
+   upnp:@"/MediaRenderer/AVTransport/Control"
+   soap_service:@"urn:schemas-upnp-org:service:AVTransport:1"
+   soap_action:@"GetTransportSettings"
+   soap_arguments:@"<InstanceID>0</InstanceID>"
+   completion:^(NSDictionary *response, NSError *error) {
+     if(!block) {
+       return;
+     }
+     if(error) {
+       block(nil, error);
+       return;
+     }
+     
+     NSString *playMode = response[@"s:Envelope"][@"s:Body"][@"u:GetTransportSettingsResponse"][@"PlayMode"][@"text"];
+     NSDictionary *returnData = playMode ? @{@"PlayMode" : playMode} : @{};
+     block(returnData, nil);
+   }];
+}
 - (void)playbackStatus:(void (^)(BOOL playing, NSDictionary*, NSError *error))block {
     [self status:^(NSDictionary *response, NSError *error){
         if(!block) {

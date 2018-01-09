@@ -223,6 +223,16 @@
 - (void)mediaInfo:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error))block;
 
 /**
+ Playback Mode:
+ Returns playback mode in block
+ - PlayMode - {NORMAL|REPEAT_ALL|REPEAT_ONE|SHUFFLE_NOREPEAT|SHUFFLE|SHUFFLE_REPEAT_ONE}
+ 
+ @param block Objective-C block to call on finish
+ */
+
+- (void)playbackMode:(void (^ _Nullable)(NSDictionary * _Nullable reponse, NSError * _Nullable error))block;
+
+/**
  Playback status
  Returns playback boolean value in block
  
