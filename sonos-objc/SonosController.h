@@ -233,6 +233,14 @@
 - (void)playbackMode:(void (^ _Nullable)(NSDictionary * _Nullable reponse, NSError * _Nullable error))block;
 
 /**
+ Set playback mode on device
+ 
+ @param playbackMode String value - NORMAL|REPEAT_ALL|REPEAT_ONE|SHUFFLE_NOREPEAT|SHUFFLE|SHUFFLE_REPEAT_ONE
+ @param block Objective-C block to call on finish
+ */
+- (void)setPlaybackMode:(NSString * _Nullable)playbackMode completion:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error))block;
+
+/**
  Playback status
  Returns playback boolean value in block
  

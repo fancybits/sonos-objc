@@ -584,6 +584,16 @@ __a < __b ? __a : __b; })
      block(returnData, nil);
    }];
 }
+
+- (void)setPlaybackMode:(NSString *)playbackMode completion:(void (^)(NSDictionary *reponse, NSError *error))block {
+  [self
+   upnp:@"/MediaRenderer/AVTransport/Control"
+   soap_service:@"urn:schemas-upnp-org:service:AVTransport:1"
+   soap_action:@"SetPlayMode"
+   soap_arguments:[NSString stringWithFormat:@"<InstanceID>0</InstanceID><NewPlayMode>%@</NewPlayMode>", playbackMode]
+   completion:block];
+}
+
 - (void)playbackStatus:(void (^)(BOOL playing, NSDictionary*, NSError *error))block {
     [self status:^(NSDictionary *response, NSError *error){
         if(!block) {
