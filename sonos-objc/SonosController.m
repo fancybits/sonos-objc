@@ -104,7 +104,6 @@ __a < __b ? __a : __b; })
      NSMutableArray <SonosPlayable*>* responseItems = [[NSMutableArray <SonosPlayable*> alloc] init];
      
      for (NSDictionary * item in items) {
-       
        SonosPlayable * playable = [[SonosPlayable alloc] init];
        
        playable.title = item[@"dc:title"][@"text"];
@@ -557,11 +556,34 @@ __a < __b ? __a : __b; })
 
 - (void)mediaInfo:(void (^)(NSDictionary *reponse, NSError *error))block {
     [self
-        upnp:@"/MediaRenderer/AVTransport/Control"
-        soap_service:@"urn:schemas-upnp-org:service:AVTransport:1"
-        soap_action:@"GetMediaInfo"
-        soap_arguments:@"<InstanceID>0</InstanceID>"
-        completion:block];
+     upnp:@"/MediaRenderer/AVTransport/Control"
+     soap_service:@"urn:schemas-upnp-org:service:AVTransport:1"
+     soap_action:@"GetMediaInfo"
+     soap_arguments:@"<InstanceID>0</InstanceID>"
+     completion:^(NSDictionary *response, NSError *error) {
+       if (!block) {
+         return;
+       }
+       if (error) {
+         block(nil, error);
+         return;
+       }
+       
+       NSLog(@"%@", response);
+       
+       NSDictionary *info = response[@"s:Envelope"][@"s:Body"][@"u:GetMediaInfoResponse"];
+       NSDictionary *currentMDData = [XMLReader dictionaryForXMLString:info[@"CurrentURIMetaData"][@"text"] error:nil];
+       
+       NSLog(@"currentMDData: %@", currentMDData);
+
+       NSMutableDictionary *returnData = [[NSMutableDictionary alloc] init];
+       
+       returnData[@"CurrentURI"] = info[@"CurrentURI"][@"text"];
+       returnData[@"CurrentMD"] = info[@"CurrentURIMetaData"][@"text"];
+       returnData[@"Title"] = currentMDData[@"DIDL-Lite"][@"item"][@"dc:title"][@"text"];
+
+       block(returnData, nil);
+     }];
 }
 
 - (void)playbackMode:(void (^)(NSDictionary *reponse, NSError *error))block {

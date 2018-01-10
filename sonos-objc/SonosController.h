@@ -220,6 +220,15 @@
  */
 - (void)trackInfo:(void (^ _Nullable)(NSString * _Nullable artist, NSString * _Nullable title, NSString * _Nullable album, NSURL * _Nullable albumArt, NSNumber * _Nullable time, NSNumber * _Nullable duration, NSInteger queueIndex, NSString * _Nullable trackURI, NSString * _Nullable protocol, NSString * _Nullable streamContent, NSError * _Nullable error))block;
 
+/**
+ Media Info:
+ Returns information regarding the source of what's playing. Mostly useful for radio stations.
+ - CurrentURI - The URI of the source that music is currently playing from
+ - CurrentMD - The XML metadata for the source
+ - Title - The title of the source
+
+ @param block Objective-C block to call on finish
+ */
 - (void)mediaInfo:(void (^ _Nullable)(NSDictionary * _Nullable response, NSError * _Nullable error))block;
 
 /**
@@ -229,7 +238,6 @@
  
  @param block Objective-C block to call on finish
  */
-
 - (void)playbackMode:(void (^ _Nullable)(NSDictionary * _Nullable reponse, NSError * _Nullable error))block;
 
 /**
