@@ -569,13 +569,9 @@ __a < __b ? __a : __b; })
          return;
        }
        
-       NSLog(@"%@", response);
-       
        NSDictionary *info = response[@"s:Envelope"][@"s:Body"][@"u:GetMediaInfoResponse"];
        NSDictionary *currentMDData = [XMLReader dictionaryForXMLString:info[@"CurrentURIMetaData"][@"text"] error:nil];
        
-       NSLog(@"currentMDData: %@", currentMDData);
-
        NSMutableDictionary *returnData = [[NSMutableDictionary alloc] init];
        
        returnData[@"CurrentURI"] = info[@"CurrentURI"][@"text"];
