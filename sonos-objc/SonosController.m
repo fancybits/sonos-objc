@@ -722,6 +722,46 @@ __a < __b ? __a : __b; })
         completion:block];
 }
 
+- (void)refresh:(void (^ _Nullable)(NSError * _Nullable error)) block{
+  void (^handler)(NSURLResponse *, NSData *, NSError *) = ^(NSURLResponse *response, NSData *data, NSError *error) {
+    NSHTTPURLResponse *hResponse = (NSHTTPURLResponse*)response;
+    if (hResponse.statusCode != 200 || error){
+      block(error);
+      return;
+    }
+    
+    NSDictionary *responseDictionary = [XMLReader dictionaryForXMLData:data error:&error];
+    NSObject *oneOrManyPlayers = responseDictionary[@"ZPSupportInfo"][@"ZonePlayers"][@"ZonePlayer"];
+    NSArray *zonePlayers;
+    if (!oneOrManyPlayers) {
+      zonePlayers = [[NSArray alloc] init];
+    } else if ([oneOrManyPlayers isKindOfClass:[NSArray class]]) {
+      zonePlayers = (NSArray *)oneOrManyPlayers;
+    } else {
+      zonePlayers = [NSArray arrayWithObject:oneOrManyPlayers];
+    }
+    
+    for (NSDictionary *dictionary in zonePlayers) {
+      NSURL *url = [NSURL URLWithString:dictionary[@"location"]];
+      if ([url.host isEqualToString:self.ip] && url.port.intValue == self.port) {
+        self.group            = dictionary[@"group"];
+        self.name             = dictionary[@"text"];
+        self.uuid             = dictionary[@"uuid"];
+        self.coordinator      = [dictionary[@"coordinator"] isEqualToString:@"true"];
+
+        break;
+      }
+    }
+    
+    block(error);
+  };
+  
+  NSURL        *url     = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@:%d/status/topology", self.ip, self.port]];
+  NSURLRequest *request = [[NSURLRequest alloc] initWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:5];
+  [NSURLConnection sendAsynchronousRequest:request queue:[[NSOperationQueue alloc] init] completionHandler:handler];
+}
+
+
 -(BOOL)isEqual:(SonosController *)other {
     return [self.ip isEqual:other.ip] && (self.port == other.port);
 }

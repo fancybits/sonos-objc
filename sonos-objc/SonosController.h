@@ -291,5 +291,7 @@
  */
 - (void)getFavorites:(void (^ _Nullable)(NSArray <SonosPlayable*> * _Nullable response, NSError * _Nullable error))block;
 
+- (void)refresh:(void (^ _Nullable)(NSError * _Nullable error)) block;
+
 
 @end
