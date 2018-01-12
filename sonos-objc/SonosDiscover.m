@@ -46,7 +46,6 @@ typedef void (^findDevicesBlock)(NSArray *ipAddresses);
                 return;
             }
             void (^handler)(SonosController *) = ^(SonosController *controller) {
-                NSLog(@"got controller: %@", controller.name);
                 [controllers addObject:controller];
                 callCompletionHandlerIfReady();
             };
